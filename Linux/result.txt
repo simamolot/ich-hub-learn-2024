@@ -1,0 +1,9 @@
+Sun Jun 23 14:00:42 UTC 2024
+Filesystem                Size      Used Available Use% Mounted on
+/dev/root                 4.9G      2.3G      2.6G  47% /
+   5 date > result.txt
+   6 df -h / >> result.txt
+   7 history | tail -n 3 >> result.txt
+cron:x:16:16:cron:/var/spool/cron:/sbin/nologin
+at:x:25:25:at:/var/spool/cron/atjobs:/sbin/nologin
+11

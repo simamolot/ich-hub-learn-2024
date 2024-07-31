@@ -1,0 +1,16 @@
+   0 mkdir -p /home/user/start
+   1 touch /home/user/start/1.txt
+   2 echo "Start" > /home/user/start/1.txt
+   3 date >> /home/user/start/1.txt
+   4 sudo mkdir -p /opt/task
+   5 sudo cp /home/user/start/1.txt /opt/task/start.txt
+   6 ls -la/ | tail -n 4 | sudo tee -a /opt/task/start.txt
+   7 ls -la / | tail -n 4 | tee -a /opt/task/start.txt
+   8 cat /opt/task/start.txt
+   9 ls -l /home/user/start
+  10 cat /opt/task/start.txt
+  11 history > /tmp/history.txt
+  12 history > /tmp/history.txt && export file /tmp/history.txthistory
+  13 history > /home/user/command_history.txt
+  14 export_file /tmp/command_history.txt
+  15 history > /tmp/command_history.txt

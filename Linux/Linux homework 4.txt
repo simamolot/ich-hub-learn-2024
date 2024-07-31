@@ -1,0 +1,20 @@
+Loading...
+ 
+Welcome to JS/Linux (i586)
+ 
+Use 'vflogin username' to connect to your account.
+You can create a new account at https://vfsync.org/signup .
+Use 'export_file filename' to export a file to your computer.
+Imported files are written to the home directory.
+ 
+localhost:~# date > result.txt
+localhost:~# df -h / >> result.txt
+localhost:~# history | tail -n 3 >> result.txt
+localhost:~# grep cron /etc/group >> result.txt
+localhost:~# grep -c root /etc/group >> result.txt
+localhost:~# date > result.txt
+localhost:~# df -h / >> result.txt
+localhost:~# history | tail -n 3 >> result.txt
+localhost:~# grep cron /etc/passwd >> result.txt
+localhost:~# grep -c root /etc/group >> result.txt
+localhost:~# export_file result.txt

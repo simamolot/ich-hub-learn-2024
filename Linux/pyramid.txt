@@ -1,0 +1,17 @@
+a
+ab
+abc
+abcd
+abcde
+abcdef
+abcdefg
+abcdefgh
+abcdefghi
+abcdefgh
+abcdefg
+abcdef
+abcde
+abcd
+abc
+ab
+a
