@@ -1,0 +1,162 @@
+"POST-MORTEM REPORT"
+
+
+1. Website Check
+  _______________
+
+Looked at the website in a web browser. It didn't work.
+Also used commands:
+- dig 3.68.118.16
+- nslookup 3.68.118.16
+It helps to see if the website's address is working right with API adress.
+
+2. Connecting to the Server
+____________________________
+We used a ssh key to connect to the server:
+ssh -i ec2-user@3.68.118.16
+This lets control the server from far away.
+
+3. Checking the Web Server
+___________________________
+We looked at how the web server was doing:
+sudo service httpd.service status
+sudo - This command gives you special rights, makes you to a superuser
+This tells us if the web server is on or off.
+
+4. Trying to Restart the Web Server
+____________________________________
+Tried turning the web server off and on again:
+sudo service httpd.service restart
+Then we checked the website again, but it still didn't work.
+
+
+5. Looking at the Web Server Status Again
+__________________________________________
+ Checked one more time, if the web server was working:
+sudo service httpd.service status
+
+6. Looking at Files on the Server
+___________________________________
+ Looked at all kind of files were on the server:
+ls -lah
+ Searched for all the files on the server:
+sudo find / -type f
+This helps to see if any files are missing or in the wrong place.
+
+7. Checking How Much Space is Left
+____________________________________
+ Looked for big files that might be causing problems:
+sudo find / -type f -size +100M -exec du -h {} +
+Found a very big file: 7.0G /var/log/httpd/access_log
+
+8. Stopping the Web Server
+___________________________
+Turned off the web server:
+sudo service httpd stop
+Tried to empty the big file:
+sudo echo > /var/log/httpd/access_log
+
+9. Getting Rid of the Big File
+_______________________________
+Deleted the big file:
+sudo rm -rf /var/log/httpd/access_log
+
+10. Checking Space Again
+_________________________
+Looked how much space was free now:
+df -h
+This showed that the file had more free space.
+
+11. Starting the Web Server and Testing
+_______________________________________
+Turned the web server back on:
+sudo service httpd start
+Checked if it was working, but there was still a problem.
+
+15. Looking for Errors
+______________________
+Looked in a file that keeps track of problems:
+cat /var/log/httpd/error_log
+
+16. Fixing Settings Files
+_________________________
+Looked at the files in the website's main folder:
+ls -la /var/www/html/mediawiki
+Got rid of some empty files and fixed the name of an important file.
+sudo rm /var/www/html/mediawiki/LocalSettings.php
+
+17. Updating the Server's Address
+_________________________________
+Changed an important settings file:
+nano /var/www/html/mediawiki/LocalSettings.php
+Restarted the web server:
+sudo service httpd restart
+Checked the status of the web server:
+sudo service httpd status
+
+18. Checking Scheduled Tasks and Cleaning Up
+_______________________________________________
+Looked for big files again.
+Checked what were set to run automatically:
+sudo crontab -l
+Found too many copies of files.
+Deleted some old copies of files we didn't need.
+
+19. Cleaning Up Log Files
+__________________________
+Deleted all the old copies of log files:
+sudo rm -rf /var/log/httpd/log_*_*.tar.gz
+Also emptied the current log file.
+
+20. Making a script to Help run the web-site more optional
+___________________________________________________________
+Made a new script called backup_httpd_logs.sh
+
+#!/bin/bash
+#
+LOG_DIR="/var/log/httpd"
+BACKUP_DIR="/home/ec2-user/backup_httpd_log"
+
+mkdir -p "$BACKUP_DIR"
+
+DATE=`date +'%Y%m%d'`
+ARCHIVE="$BACKUP_DIR/LogHTTPD-$DATE.tar.gz"
+
+tar -czf "@ARCHIVE" "$LOG_DIR"
+
+sudo service httpd stop
+
+sudo rm -rf "$LOG_DIR/access_log"
+
+sudo service httpd start
+
+find "$BACKUP_DIR" -type f -name "LogHTTPD-*.tar.gz" -mtime +3 -exec rm -rf {} \;
+
+
+This script does:
+- It makes a copy of the log files and gives it today's date
+- It turns off the web server for a moment
+- It gets rid of the old log file
+- It turns the web server back on
+- It deletes copies that are more than 3 days old
+
+Made sure the computer could run this script:
+chmod +x backup_httpd_logs.sh
+
+21. Setting Up the script to Run Every Day
+___________________________________________
+Told the computer to run our new script every day at 5 minutes past midnight:
+sudo crontab -e
+5 0 * * * /home/ec2-user/backup_httpd_logs.sh
+
+TO MAKE THINGS BETTER:
+----------------------------------
+
+1. Make copies of log files regularly.
+2. Make a script to check how much free space is left.
+3. Make a script to check if the web server is working.
+4. Make a script to check if the website can be reached.
+
+IMPORTANT NOTE:
+This is not a permanent solution. The web admin should review and improve the whole setup.
+
