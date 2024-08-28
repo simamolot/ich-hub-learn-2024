@@ -1,0 +1,48 @@
+/**
+ * _id: The id of the group.
+ * fieldN: The first field name.
+ */
+{
+  _id: '$avg_age',
+  avg_age: {$avg: '$age'}
+}
+
+db.orders_molot.insertMany([
+    { id: 1, customer: "Olga", product: "Apple", amount: 15.55, city: "Berlin" },
+    { id: 2, customer: "Anna", product: "Apple", amount: 10.05, city: "Madrid" },
+    { id: 3, customer: "Olga", product: "Kiwi", amount: 9.6, city: "Berlin" },
+    { id: 4, customer: "Anton", product: "Apple", amount: 20.0, city: "Roma" },
+    { id: 5, customer: "Olga", product: "Banana", amount: 8.0, city: "Madrid" },
+    { id: 6, customer: "Petr", product: "Orange", amount: 18.3, city: "Paris" }
+]);
+
+db.orders_molot.countDocuments()
+
+db.orders_molot.find({product: 'Apple'}).count()
+
+db.orders_molot.find({},{id: 1, _id: 0}).sort({amount: -1}).limit(3)
+
+db.orders_molot.find({city: 'Berlin'}).count()
+
+db.orders_molot.find({city: {$in: ['Berlin', 'Madrid']}, product: 'Apple'}).count()
+
+db.orders_molot.aggregate([
+    {
+        $match: {}
+    },
+    {
+        $group: {
+            _id: '$customer',
+            total: { $sum: '$amount' }
+        }
+    }
+]);
+
+
+db.orders_molot.aggregate([
+    { $match: { customer: 'Olga' } },
+    { $group: { _id: '$city' } }
+]);
+
+
+
