@@ -1,0 +1,107 @@
+1.Из коллекции sample_airbnb.listingsAndReviews найдите среднюю цену за сутки проживания на Гавайских островах. 
+
+Островов несколько, поэтому либо используем {'address.location': {$geoWithin: { $centerSphere …. 
+
+Либо перечисляем все возможные острова в поле market
+
+
+Подсказка - нам понадобится 2 этапа агрегации : $match и $group
+
+{
+  "address.country": "United States",
+  "address.location": {
+    $geoWithin: {
+      $geometry: {
+        type: "Polygon",
+        coordinates: [
+          [
+            [
+              -160.411079482691,
+              22.085639901650328
+            ],
+            [
+              -159.46593718720695,
+              23.01907618729305
+            ],
+            [
+              -153.26756213310222,
+              19.559790136497412
+            ],
+            [
+              -155.57546773835398,
+              18.020527657852337
+            ],
+            [
+              -155.72932811203745,
+              18.145851771694467
+            ],
+            [
+              -160.411079482691,
+              22.085639901650328
+            ]
+          ]
+        ]
+      }
+    }
+  }
+}
+
+/**
+ * _id: The id of the group.
+ * fieldN: The first field name.
+ */
+{
+  _id: null,
+  avgprice: {
+    $avg: '$price'
+  }
+}
+
+_id
+null
+avgprice
+231.4853420195439739413680781758958
+
+2.Подсчитайте в коллекции sample_mflix.movies, сколько фильмов имеют imdb рейтинг выше 8 и выходили в период с 2015 до 2023 года (используем year) Какой из них имеет самый высокий рейтинг ?
+
+db.movies.countDocuments({
+  "imdb.rating": { $gt: 8 },
+  "year": { $gte: 2015, $lte: 2023 }
+})
+
+
+db.movies.find(
+  {
+    "imdb.rating": { $gt: 8 },
+    "year": { $gte: 2015, $lte: 2023 }
+  },
+  {
+    "title": 1,
+    "imdb.rating": 1,
+    "_id": 0
+  }
+).sort({ "imdb.rating": -1 }).pretty()
+
+
+db.movies.aggregate([
+  {
+    $match: {
+      "imdb.rating": { $gt: 8 },
+      "year": { $gte: 2015, $lte: 2023 }
+    }
+  },
+  {
+    $sort: { "imdb.rating": -1 }
+  },
+  {
+    $limit: 1
+  },
+  {
+    $project: {
+      _id: 0,
+      title: 1,
+      "imdb.rating": 1,
+      year: 1
+    }
+  }
+])
