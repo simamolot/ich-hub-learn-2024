@@ -1,0 +1,100 @@
+# 1
+db.Spotify_Youtube.find().sort({ Danceability: -1, Energy: -1 }).limit(1)
+
+# 2
+db.Spotify_Youtube.find({ Album_type: { $ne: "compilation" } }).sort({ Duration_ms: -1 }).limit(1)
+
+# 3
+db.Spotify_Youtube.aggregate([
+    { $group: { _id: "$Album", trackCount: { $sum: 1 } } },
+    { $sort: { trackCount: -1 } },
+    { $limit: 1 }
+])
+
+# 4
+db.Spotify_Youtube.find().sort({ Stream: -1 }).limit(1).toArray()[0];
+
+
+# 5 (2) Youtube
+
+[
+  {
+    $sort:
+ 
+      {
+        Views: -1
+      }
+  },
+  {
+    $limit:
+      
+      20
+  },
+  {
+    $project:
+      
+      {
+        Artist: 1,
+        Track: 1,
+        Views: 1,
+        Url_youtube: 1,
+        Title: 1,
+        Channel: 1,
+        Likes: 1,
+        Comments: 1,
+        Description: 1,
+        _id: 0
+      }
+  },
+  {
+    $out:
+      
+      {
+        db: "ich_edit",
+        coll: "top20Youtube_310524ptm_Volodymyr"
+    
+      }
+  }
+]
+
+# 5(1) Spotify
+
+[
+  {
+    $sort:
+ 
+      {
+        Views: -1
+      }
+  },
+  {
+    $limit:
+      
+      20
+  },
+  {
+    $project:
+      
+      {
+        Artist: 1,
+        Track: 1,
+        Views: 1,
+	Url_spotify: 1,
+        Title: 1,
+        Channel: 1,
+        Likes: 1,
+        Comments: 1,
+        Description: 1,
+        _id: 0
+      }
+  },
+  {
+    $out:
+      
+      {
+        db: "ich_edit",
+        coll: "top20Spotify_310524ptm_Volodymyr"
+    
+      }
+  }
+]
