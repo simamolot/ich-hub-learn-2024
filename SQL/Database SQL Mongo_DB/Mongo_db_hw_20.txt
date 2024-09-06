@@ -1,0 +1,27 @@
+Найти рестораны на 'Staten Island' в названии которых есть слово pizza (Pizza и PIZZA тоже считаются)
+
+Выведите названия 5 лучших по среднему значению отзывов ( $avg: "$grades.score")
+
+db.restaurants.aggregate([
+  {
+    $match: {
+      "borough": "Staten Island",
+      "name": { $regex: /pizza/i }
+    }
+  },
+  {
+    $unwind: "$grades"
+  },
+  {
+    $group: {
+      _id: "$name",
+      avgScore: { $avg: "$grades.score" }
+    }
+  },
+  {
+    $sort: { avgScore: -1 }
+  },
+  {
+    $limit: 5
+  }
+])
